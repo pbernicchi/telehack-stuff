@@ -1,0 +1,10 @@
+01 PRINT " "
+02 PRINT "[auto ptycon attached to 29 by bobbyboy9!]"
+03 PRINT " "
+04 sleep 4
+10 th_exec "call -151"
+20 th_exec "2425152g"
+30 th_exec "attach 29"
+50 th_exec "quit"
+60 th_exec "r"
+70 PRINT "good bye!"

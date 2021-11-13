@@ -1,0 +1,5 @@
+01 PRINT " "
+02 PRINT "[auto ptycon by bobbyboy9!]"
+03 PRINT " "
+10 th_exec "call -151"
+20 th_exec "2425152g"
