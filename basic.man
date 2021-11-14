@@ -1,0 +1,1631 @@
+___.                 .__
+\_ |__ _____    _____|__| ____
+ | __ \\__  \  /  ___/  |/ ___\
+ | \_\ \/ __ \_\___ \|  \  \___
+ |___  (____  /____  >__|\___  >
+     \/     \/     \/        \/
+         Manual by archer (modified 04.01.2021)
+
+
+Changelog
+---------
+
+10.07.2018
+ - added INSTR
+ - added DIR$
+ - changed how INKEY$ works
+ - fixed POKE Syntax
+ - updated FAQ
+17.07.2018
+ - changed how INKEY$ works
+ - added POLKEY$
+28.08.2019
+ - Added the following language extensions to BASIC for better HP2000 Access BASIC compatibility:
+ - READ #n[,r];var - reads from file #n optional record r and inputs vars
+ - PRINT #n[,r];var - prints variables to file #n at optional record r
+ - Added the following functions to BASIC for better HP2000 Access BASIC compatibility:
+ - LIN(n)
+ - POS(string1,string2)
+ - TYP(filenum)
+ - SPA(number)
+ - REC(filenum)
+ - BRK(arg)
+ - NUM(char)
+ - TIM(n)
+ - SYS(n)
+ - UPS$(string)
+02.09.2019
+ - added STRING$
+ - renamed STR to STR$
+ - Added Introduction to Variable Data Types
+ - Added various HP 2000 Access BASIC Commands
+11.09.2019
+ - Added ARG$
+05.10.2019
+ - Added RENUMBER
+12.12.2019
+ - Updated DEF FN to reflect standard DEC/HP/MS BASIC implementation and
+ - clarified variable type checking
+27.05.2020
+ - updated POLKEY$ Definition
+07.06.2020
+ - Added ARGC% and ARGV$(n)
+28.06.2020
+ - Added PORT%
+30.06.2020
+ - Added Comparing/Logical Operators
+01.07.2020
+ - Added section Set Up Your Editor for BASIC Programming
+ - Added section ANSI Escape Sequences
+11.07.2020
+ - Added ON, CALL Commands
+ - Added various Commands which are not implemented right now and act as no operation
+21.11.2020
+ - Added the following TH_ function definitions:
+ - TH_SYSLEVEL
+ - TH_HASBADGE(badge$)
+ - TH_HASLOGIN(host$)
+ - TH_HASROOT(host$)
+ - TH_DEFGROUP$
+ - TH_PLAN$
+10.12.2020
+ - Added TH_TIME
+ - Added TH_LOCALTIME$([OPTION],[TIMESTAMP])
+ - Added TH_GMTIME$([OPTION],[TIMESTAMP])
+ - Added TH_LOCALTIME([OPTION],[TIMESTAMP])
+ - Added TH_GMTIME([OPTION],[TIMESTAMP])
+30.12.2020
+ - Added TH_EXEC
+ - Added TH_MODEM$
+ - Added TH_HOSTNAME$
+ - Added TH_NETSTAT$
+ - Added TH_MD5HEX$
+ - Added TH_MD5BASE64$
+04.01.2021
+ - Extended TH_EXEC capability
+06.01.2021
+ - Added support for regular expressions with three new TH_ extensions:
+ - TH_RE( TEXT$, PATTERN$ )
+ - TH_RE$( TEXT$, PATTERN$ )
+ - TH_SED$( TEXT$, FIND$, REPLACE$ )
+25.04.2021
+ - Added additional TH_ extension:
+ - TH_HASADMIN (to check for satellite admin)
+ - Added Base64 encoding / decoding:
+ - TH_B64E$
+ - TH_B64D$
+15.10.2021
+ - Added SCRATCH command from Commodore BASIC
+ - Extended TH_HASBADGE() function to allow passing of usernames as 2nd option.
+21.10.2021
+ - Extended capability of TH_RE and TH_RE$ functions to support capture groups, and case insensitivity
+
+Table of Contents
+-----------------
+
+1. Set Up Your Editor for BASIC Programming
+2. Comparing/Logical Operators
+3. Variables and Data Types
+4. Array Variables
+5. Overview of Commands
+6. Detailed Overview of Commands
+7. How to...
+8. COMM.EXE Basic Programs
+9. ANSI Escape Sequences
+
+
+1. Set Up Your Editor for BASIC Programming
+-------------------------------------------
+There are currently 3 user-written plugins, which enable syntax-highlighting in various editors:
+
+Atom - https://atom.io/packages/language-thbasic
+Sublime Text 3 - https://github.com/thunderpoot/telebasic-sublime-syntax
+Visual Studio Code - https://marketplace.visualstudio.com/items?itemName=vscode-th-basic.vscode-th-basic
+
+
+2.a Comparing Operators (for use with IF)
+-----------------------------------------
+=   equal to
+10 A% = 0 : IF A% = 0 THEN PRINT "It is equal!"
+
+>   greater than
+10 A% = 5 : IF A% > 0 THEN PRINT "It is greater!"
+
+>=  greater than or equal to
+10 A% = 0 : IF A% >= 0 THEN PRINT "It is greater or equal!"
+
+<   less than
+10 A% = -1 : IF A% < 0 THEN PRINT "It is less!"
+
+<=  less than or equal to
+10 A% = 0 : IF A% <= 0 THEN PRINT "It is less or equal!"
+
+<>  not equal to
+10 A% = 1 : IF A% <> 0 THEN PRINT "It is not equal!"
+
+
+2.b Logical Operators
+---------------------
+AND  Bitwise AND Operation
+10 PRINT 5 AND 1
+
+AND  Using within IF to check if both conditions are true
+10 A% = 3 : B% = 5
+20 IF A% = 3 AND B% = 5 THEN PRINT "Both conditions are true"
+
+OR   Bitwise OR Operation
+10 PRINT 5 OR 1
+
+OR   Using within IF to check if one condition is true
+10 A% = 3 : B% = 5
+20 IF A% = 3 OR B% = 5 THEN PRINT "At least one condition is true"
+
+NOT  Negation
+10 PRINT NOT 0
+
+
+3. Variables and Data Types
+---------------------------
+You can store either Text or Numerical Values in Variables.
+Variable names can contain Letters and Digits, but they have to Start with a Letter.
+You cannot use Reserved Keywords (e.g. FOR, IF) as Variablenames.
+Variablenames can be suffixed with a Type Definition Character:
+ - $ represents a Text (String) Value
+ - % represents a Numeric (Integer) Value
+ - ! represents a Numeric (Single-Precision) Value
+Numerical variables and strings cannot be used interchangeably.
+For Example:
+ 10 NAME$ = "some name"
+would represent a String Variable, but
+ 10 NAME = "some name"
+would be a TYPE MISMATCH ERROR as you cant assign a string to a numeric variable
+
+
+4. Array Variables
+------------------
+An Array Variable is basically a List of Values. These can be accessed by specifying a Index Number.
+As Example we define an String Array of Size 10:
+ 10 DIM MYLIST$(10)
+Now we can modify the 5th Entry (note that the Array Index usually starts at 0, and can be also negative):
+ 20 MYLIST$(4) = "some text"
+
+5. Overview of Commands
+-----------------------
+
+abs       - returns the absolute value of the specified value
+access    - currently not implemented, does nothing
+arg$      - variable containing argumnets passed to program on command line
+argc%     - variable containing the number of arguments passed to the program
+argv$     - an array containing all of the arguments passed to the program
+asc       - returns the ASCII-Code for its equivalent character
+atn       - returns the arctangent of the specified value
+beep      - sends a bell
+bin$      - returns the binary representation of an integer as a string
+brk       - sets and returns status of BREAK key
+call      - currently not implemented, does nothing
+chr$      - convert an ASCII-Code to its equivalent character
+cint      - returns the nearest integer of the specified value (9.5 becomes 10)
+circle    - currently not implemented, does nothing
+clear     - clears all variables and closes all open files
+close     - close the file and save it/create if it doesn't exist
+cls       - clears the screen
+color     - changes the background and/or foreground colour of the terminal
+cos       - returns the cosine of a specified value
+csng      - convert a specified value to a single precision number
+data      - store the numeric and string constants that are accessed by the program READ statements
+date$     - returns the current date
+def fn    - defines a function
+defdbl    - declare a variable as double precision number (currently not implemented, does nothing)
+defint    - declare a variable as integer number (currently not implemented, does nothing)
+defsng    - declare a variable as single precision number  (currently not implemented, does nothing)
+defstr    - declare a variable as string (currently not implemented, does nothing)
+dim       - define an array of a fixed size
+dir$      - returns the filenames in your local directory, separated by spaces
+do        . currently not implemented, does nothing
+draw      - currently not implemented, does nothing
+end       - ends the current program
+exp       - returns the base of natural logarithms to the power of the specified value
+for       - execute a series of instructions a specified number of times in a loop
+gosub     - branch to a subroutine and return
+goto      - branch unconditionally out of the normal program sequence to the specified line number
+height    - returns your terminal height
+hex$      - returns a string which represents the hexadecimal value of the specified value
+home      - sets the cursor to the top left position of the screen
+if        - make a decision regarding program flow based on the result of a returned expression
+inkey$    - returns one character read from the terminal. it will wait till any character is being typed
+input     - shows Prompt and reads input from the users terminal and save it into a Variable
+instr     - returns the position of a substring in a string
+int       - truncate an value to a whole number
+itm       - returns the data item number in the current record
+left$     - returns a string that comprises the left-most specified number characters of a specified string
+len       - returns the number of characters in the specified string
+let       - assigns a value to a variable
+lin       - returns one or more line feeds
+locate    - change the cursors position
+log       - returns the natural logarithm of the specified value
+log10     - returns the natural logarithm of the specified value (Base 10)
+mid$      - returns a string of l characters from String beginning with the n Character
+new       - creates a new basic program
+next      - used within for. execute a series of instructions a specified number of times in a loop
+nint      - returns the nearest integer of the specified value (9.5 becomes 9)
+num       - returns the ASCII-Code for its equivalent character
+oct$      - returns a octal value of a specific value
+open      - opens a file
+on        - jump conditionally to GOTO/GOSUB, based on value given
+pclear0   - reserves one page of memory (currently not implemented, does nothing)
+pclear1   - reserves two pages of memory (currently not implemented, does nothing)
+peek      - read a value from the specified memory location
+play      - currently not implemented, does nothing
+pmode0    - selects a resolution and first memory page of a low resolution graphic screen. (0 - 128 x 96, 2 colour) (currently not implemented, does nothing)
+poke      - write a byte of data into the specified memory location
+polkey$   - returns one character read from the terminal. when no key is hit within a given time (in seconds), it returns an empty string
+port%     - returns the currently logged in port number
+pos       - returns the character position in string 1, where the first occurrence of string 2 was found
+print     - prints a expression on the screen
+put       - currently not implemented, does nothing
+r2d       - converts radians to degrees
+randomize - reseed the random number generator
+read      - read a value from DATA and assign them to variables
+rec       - returns the current record number (line number) in the specified file
+rem       - explanatory remark. does not get executed by the interpreter
+renumber  - renumbers a basic program
+restore   - allow DATA statements to be reread
+return    - return from a subroutine
+right$    - returns the rightmost Number(n) characters of the specified String
+rnd       - returns a random number between 0 and 1
+run       - execute the program in memory
+scratch   - delete a file from disk
+screen    - currently not implemented, does nothing
+sgn       - returns the sign of the specified value
+sin       - returns the trigonometric sine of the specified value
+sleep     - pauses the program for a specified amount of seconds
+sound     - currently not implemented, does nothing
+soundrnd  - currently not implemented, does nothing
+space$    - returns a string of specified Number value of spaces
+spa       - returns a string of specified Number value of spaces
+spc$      - returns a string of specified Number value of spaces
+sqr       - returns the square root of the specified value
+sqrt      - returns the square root of the specified value
+stop      - halts the program and returns to the basic interpreter
+str$      - returns a string representation of the specified value
+sys       - returns various system values
+string$   - repeats a string n times
+tab       - returns the specified amount of spaces
+tab$      - returns the specified amount of spaces
+tan       - returns the trigonometric tangent of the specified value
+tim       - returns the current second, minute, hour, day or year depending on the numerical value passed
+time$     - returns the local system time
+timer     - returns the number of seconds since midnight
+typ       - returns the type of the next record in a file
+troff     - stops tracing of program statements
+tron      - starts tracing of program statements
+ups$      - returns the uppercase value of the given string
+user$     - returns the current logged in user
+width     - returns your terminal width
+val       - returns the numerical value of the specified string value
+
+TH_ language extentions:
+------------------------
+
+th_syslevel               - returns the user's Telehack system level (int)
+th_hasbadge(badge$,user$) - returns a UNIX timestamp of when the user earned badge$, or 0 (int)
+th_haslogin(host$)        - 1 if the user has login on host$, else 0 (int)
+th_hasroot(host$)         - 1 if the user has login on host$, else 0 (int)
+th_hasadmin(satellite$)   - 1 if the user has admin on satellite$, else 0 (int)
+th_defgroup$              - returns the user's defgroup, separated by spaces
+th_plan$                  - returns the user's .plan as a string
+th_localtime$             - returns the human-readable local time for a unix timestamp
+th_gmtime$                - returns the human-readable UTC time for a unix timestamp
+th_modem$                 - returns the modem number or hosted filename
+th_hostname$              - returns current hostname or hostname of argument passed
+th_netstat$               - returns current netstat or netstat of argument passed
+th_md5hex$                - returns md5 hex of argument passed as hex
+th_md5base64$             - returns md5 hex of argument passed as base64
+th_b64e$                  - returns argument encoded to base64
+th_b64d$                  - returns argument decoded from base64
+th_re                     - number context returns 0 or 1 depending on regex match
+th_re$                    - string context returns single matched substring
+th_sed$                   - stream editor function replaces substring
+th_exec                   - executes a shell command and returns to the current basic program
+                          - optionally assign the stdout to a variable
+
+
+6. Detailed overview of Commands
+--------------------------------
+
+ ABS(n)
+ ------
+ returns the absolute value of the specified value n
+
+ PRINT ABS(-40)
+  40
+
+
+ ACCESS
+ ------
+ currently not implemented, does nothing
+
+
+ ASC(character), NUM(character)
+ ------------------------------
+ returns the ASCII-Code for its equivalent character
+
+ 10 PRINT ASC(" ")
+  32
+
+
+ ARG$
+ ----
+ A string variable this is populated with a string containing the command line arguments
+ when a BASIC program is run from the shell command prompt.
+
+ @program foo bar
+ PRINT ARG$
+  foo bar
+
+
+ ARGV$(n)
+ --------
+ An array containing all of the arguments passed to the program
+
+
+ ARGC%
+ -----
+ The number of arguments passed to the program
+
+   10  FOR I = 0 TO ARGC%-1
+   20  PRINT ARGV$(I)
+   30  NEXT I
+
+ @program foo "hello world" bar
+ [run program foo "hello world" bar]
+ program.bas
+ foo
+ hello world
+ bar
+
+
+ ATN(n)
+ ------
+ returns the arctangent of the specified value n
+
+ PRINT ATN(40)
+  1.546
+
+
+ BIN$(n)
+ ______
+ returns the binary representation of the integer n as a string
+
+ PRINT BIN$(123)
+  1111011
+
+
+ BRK(n)
+ ______
+ enables and disables the break key
+
+ Y=BRK(0):REM break is disabled
+
+
+ CALL
+ ----
+ currently not implemented, does nothing
+
+
+ CHR$(n)
+ -------
+ convert an ASCII-Code (n) to its equivalent character
+
+ PRINT CHR$(66)
+  B
+
+
+ CINT(n)
+ -------
+ returns the nearest integer of the specified value (9.5 becomes 10)
+
+ PRINT CINT(5.7)
+  6
+
+
+ CIRCLE
+ ------
+ currently not implemented, does nothing
+
+
+ COLOR(a, b)
+ -----------
+ changes the background(b) and/or foreground(a) color of the terminal
+
+ COLOR 3, 4
+ PRINT "Hello"
+  (prints Hello with blue(b) background and yellow(a) foreground text)
+  (a List of possible Colors can be found with the command "show colors")
+
+
+ COS(n)
+ ------
+ returns the cosinus of a specified value (n) in radians
+
+ PRINT COS(67)
+  -0.517769799789505
+
+
+ CSNG(n)
+ -------
+ convert a specified value(n) to a single precision number
+
+ PRINT CSNG("3.45")
+  3.450
+
+
+ DATA n...
+ -----------
+ store the numeric and string constants that are accessed by the program READ statements
+
+ DATA 4.1, 5.6, 9.98
+ READ A, B, C
+ PRINT A, B, C
+  4.100          5.600          9.980
+
+
+ DEF FNname(Argument) = Expression
+ ---------------------------------------
+ define a function with the Name 'FNname' which accepts an 'Argument' and returns the defined expression.
+ The function name must always begin with FN.
+
+ 10 DEF FN square(x)=x^2
+ 20 DEF FNcube(x) = x^3
+ 30 PRINT FNsquare(5),FNcube(5)
+ RUN
+  25       125
+
+
+ DEFDBL (variable)
+ -----------------
+ declare a variable as double precision number (currently not implemented, does nothing)
+
+ DEFDBL Variable
+
+
+ DEFINT (Variable)
+ -----------------
+ declare a variable as integer number (currently not implemented, does nothing)
+
+ DEFINT Variable
+
+
+ DEFSNG (Variable)
+ -----------------
+ declare a variable as single precision number (currently not implemented, does nothing)
+
+ DEFSNG Variable
+
+
+ DEFSTR (Variable)
+ -----------------
+ declare a variable as string (currently not implemented, does nothing)
+
+ DEFSTR Variable
+
+
+ DIM (Variable)
+ --------------
+ define an array of a fixed size
+
+ DIM Variable(10)
+ (would define an Array with a maximum size of 10)
+
+
+ DIR$
+ ----
+ returns the filenames in your local directory, separated by spaces
+
+ PRINT DIR$
+
+
+ DO
+ --
+ currently not implemented, does nothing
+
+
+ DRAW
+ ----
+ currently not implemented, does nothing
+
+
+ EXP (n)
+ -------
+ return the base of natural logarithms to the power of the specified value(n)
+
+ PRINT EXP(13)
+  442413.392
+
+
+ FOR (variable) = (startValue) TO (maxValue) [STEP n]
+ ----------------------------------------------------
+ execute a series of instructions a specified number of times in a loop
+
+ 10 FOR I = 1 TO 40
+ 20  PRINT I
+ 30 NEXT I
+ (this would run 40 times and output every time the current counter. it would increase I everytime by 1)
+
+ 10 FOR I = 1 TO 40 STEP 2
+ 20  PRINT I
+ 30 NEXT I
+ (this would run 40 times and output every time the current counter. it would increase I everytime by 2)
+
+
+ GOSUB (LineNumber)
+ ------------------
+ branch to a subroutine and return
+
+ 10 GOSUB 100
+ 20 PRINT "Now im back from the Subroutine"
+ 30 END
+ 100 REM Subroutine starts here
+ 110 PRINT "Iam now in the Subroutine"
+ 120 RETURN
+  Iam now in the Subroutine
+  Now im back from the Subroutine
+
+
+ GOTO (LineNumber)
+ -----------------
+ branch unconditionally out of the normal program sequence to a specified line number
+
+ 10 PRINT "Hello World!";
+ 20 GOTO 10
+
+
+ HEIGHT
+ ------
+ returns your terminal height
+
+ 10 PRINT height
+  42
+
+
+ HEX$ (n)
+ -----------
+ returns a string which represents the hexadecimal value of the specified Number(n) value
+
+ 10 PRINT HEX$(127)
+  7F
+
+
+ IF expression THEN statements
+ ---------------------------------
+ make a decision regarding program flow based on the result of a returned expression
+ see section 1.a and 1.b for supported operators
+
+ 10 K = 3
+ 20 J = 10
+ 30 IF J > K THEN PRINT "J is bigger than K"
+  J is bigger than K
+
+
+ INKEY$
+ ------
+ returns one character read from the terminal. it will wait till any character is being typed
+
+ 10 A$ = INKEY$
+ 20 PRINT A$
+
+
+ INPUT Prompt, Variable
+ INPUT FileNo, Variable
+ -----------------------
+ shows Prompt and reads input from the users terminal and save it into a Variable
+
+ 10 INPUT "Enter something>", A$
+ 20 PRINT A$
+
+ Reads a Line from an open File and saves it into Variable
+
+ 10 INPUT# 1, A
+ 20 PRINT A
+
+
+ INSTR(string, searchFor, startPos)
+ ----------------------------------
+ returns the position (starting with 0) of a substring in a string
+
+ 10 TEXT$ = "Hello World"
+ 20 SEARCHFOR$ = "W"
+ 30 PRINT INSTR(TEXT$, SEARCHFOR$, 0)
+  6
+
+
+ INT (n)
+ -------
+ truncate an value to a whole number
+
+ 10 PRINT INT(5.6)
+  5
+
+
+ ITM(fileNumber)
+ ---------------
+ returns the number of the data item currently pointed to in the current record of file fileNumber.
+ In Telehack BASIC this will almost always be 1.
+
+ 10 PRINT #1;A,B,C
+ 20 READ #1,1;A
+ 30 PRINT REC(1),ITM(1)
+  1            2
+
+
+ LEFT$(String, Number)
+ ---------------------
+ returns a string that comprises the left-most specified number characters of a specified string
+
+
+ 10 A$ = "Hello World"
+ 20 B$ = LEFT$(A$, 5)
+ 30 PRINT B$
+  Hello
+
+
+ LEN(String)
+ -----------
+ returns the number of characters in the specified string
+
+
+ 10 A$ = "Hello World"
+ 20 PRINT LEN(A$)
+  11
+
+
+ LET Variable = Value
+ --------------------
+ assigns a value to a variable
+
+
+ 10 LET A = 12345
+ 20 PRINT A
+  12345
+
+
+ LIN(number)
+ -----------
+ returns number of new lines
+
+ 10 PRINT "A" LIN(2) "B"
+  A
+
+  B
+
+
+ LOCATE y, x
+ -----------
+ change the cursors position to y, x
+
+
+ 10 LOCATE 5, 5
+
+
+ LOG(n)
+ ------
+ returns the natural logarithm of the specified value(n)
+
+
+ 10 PRINT LOG(6)
+  1.792
+
+
+ LOG10(n)
+ --------
+ returns the natural logarithm of the specified value(n) (Base 10)
+
+
+ 10 PRINT LOG10(6)
+  0.778
+
+
+ MID$(String, n, [l])
+ --------------------
+ returns a string of l characters from String beginning with the n Character
+
+
+ 10 A$ = "Hello World"
+ 20 PRINT MID$(A$,3,3)
+  llo
+
+
+ NINT(n)
+ -------
+ returns the nearest integer of the specified value (9.5 becomes 9)
+
+
+ 10 PRINT NINT(5.6)
+  6
+
+
+ NUM(string)
+ ---------
+ returns the ASCII value of the first character in a string
+
+ 10 PRINT NUM("A")
+  65
+
+
+ OCT$(n)
+ -------
+ returns a octal value of the specified value(n)
+
+
+ 10 PRINT OCT$(66)
+  102
+
+
+ OPEN filename, AS fileNumber
+ ----------------------------
+ opens a file
+
+ 10 OPEN "filename.txt", AS #1
+
+
+ ON NUMBER%
+ ------------------------
+ jump conditionally to GOTO/GOSUB, based on value given
+
+ 10 NUMBER% = 2
+ 20 ON NUMBER% GOTO 100,200,300
+ 100 PRINT "Goto 100, should NOT jump here" : END
+ 200 PRINT "Goto 200, should jump here" : END
+ 300 PRINT "Goto 300, should NOT jump here" : END
+
+
+ PCLEAR0
+ -------
+ currently not implemented, does nothing
+
+
+ PCLEAR1
+ -------
+ currently not implemented, does nothing
+
+
+ PEEK(n)
+ -------
+ read a value from the specified memory location(n)
+
+
+ 10 PRINT PEEK(1300)
+  83
+
+
+ PLAY
+ ----
+ currently not implemented, does nothing
+
+
+ PMODE0
+ ------
+ currently not implemented, does nothing
+
+
+ POKE n, m
+ ----------
+ write a byte of data(m) into the specified memory location(n)
+
+
+ 10 POKE 1300, 255
+
+
+ POLKEY$
+ -------
+ returns one character read from the terminal. when no key is hit within a given time (in seconds), it returns an empty string
+
+ 10 A$ = POLKEY$(5)
+ 20 REM This will wait 5 seconds, waiting for a User Input
+ 30 PRINT A$
+
+
+ PORT%
+ -----
+ returns the Port from the currently logged in user
+
+ 10 PRINT USER$ + " is logged in on port: " + STR$(PORT%)
+
+
+ POS(string1,string2)
+ --------------------
+ returns the position of string2 in string1 indexed from 1 or 0 if not found
+
+ 10 A$="ABCDE"
+ 20 PRINT POS(A$,"CD")
+   3
+
+
+ PRINT expression
+ PRINT# fileNumber, expression
+ PRINT #fileNumber[,recordNumber]; expression
+ PRINT #fileNumber[,recordNumber];END
+ --------------------------------------------
+ prints a expression on the screen
+ prints a expression into an open file
+ prints an EOF mark to a file, truncating the file at that record
+ ( '&' and '?' are available aliases for PRINT )
+
+
+ 10 A = 5
+ 20 B = 10
+ 30 PRINT A + B
+  15
+
+
+ 10 A$ = "Hello "
+ 20 B$ = "World"
+ 30 PRINT A$;
+ 40 PRINT B$
+  Hello World
+ (Adding a ; at the end of PRINT does not create a newline)
+
+
+ 10 PRINT# 1, "Iam writing into a file"
+
+ 10 PRINT #1;A$
+ 20 PRINT #1,1;"Overwriting A$ in record 1"
+ 30 PRINT #1,1;END : REM Truncates file at record 1
+ (notice the position of the # and the space in the different forms of file access)
+
+
+ PUT
+ ---
+ currently not implemented, does nothing
+
+
+ R2D(n)
+ ------
+ converts radians(n) to degrees
+
+
+ 10 PRINT R2D(1.2)
+  68.755
+
+
+ READ n...
+ READ #fileNumber[,recordNumber];variables
+ ----
+ read a value from DATA or a file and assign them to variables
+
+
+ 10 DATA 4.1, 5.6, 9.98
+ 20 READ A, B, C
+ 30 PRINT A, B, C
+  4.100          5.600          9.980
+
+ 10 READ #1;A$
+ 20 READ #1,4;B$
+
+ REC(n)
+ ------
+ returns the current record number (line number) in the specified file. (starts with 1)
+
+ 10 OPEN "telehack.txt", AS #1
+ 20 INPUT# 1, DUMP$
+ 30 INPUT# 1, DUMP$
+ 40 INPUT# 1, DUMP$
+ 50 PRINT REC(1)
+ 60 CLOSE #1
+  3
+
+
+ RENUMBER [start,[inc]]
+ --------
+ Renumbers the statements of the current program in memory. When optional parameters are not
+ specified number starts at 10 and increments by 10 for each line. Can be abbrieviated to REN
+ or RENUM. Useful if you want to add more lines between existing statements.
+
+ 1 GOTO 2
+ 2 END
+ RENUMBER
+ LIST
+ 10 GOTO 20
+ 20 END
+
+ RESTORE
+ -------
+ allow DATA statements to be reread
+
+
+ 10 DATA 4.1, 5.6, 9.98
+ 20 READ A, B, C
+ 30 PRINT A, B, C
+  4.100          5.600          9.980
+ 40 RESTORE
+ 50 READ A, B, C
+ 60 PRINT A, B, C
+  4.100          5.600          9.980
+
+
+ RIGHT$(String, n)
+ -----------------
+ returns the rightmost Number(n) characters of the specified String
+
+
+ 10 A$ = "Hello World"
+ 20 PRINT RIGHT$(A$, 5)
+  World
+
+
+ RND(n)
+ ------
+ if n < 0, returns a random number in the interval [0, 1) seeded by INT(n)
+ if n = 0, returns a random number in the interval [0, 1)
+ if n > 0, returns a random number in the interval [0, INT(n))
+
+
+ 10 PRINT RND(-5)
+ 20 PRINT RND(0)
+ 30 PRINT RND(5)
+  0.249
+  0.912
+  2.376
+
+
+ SCRATCH
+ -------
+ delete a file from the disk
+
+  10 SCRATCH "FOO.TXT"
+
+  ARE YOU SURE? Y/n y
+  FOO.TXT removed.
+
+ any input that is not the Y key (case insensitive) will cancel.
+
+ runs silently when run with variable assignment
+ (NB: will not prompt for confirmation)
+
+  10 SCRATCH "BAR.TXT" ; FOO$
+
+
+
+ SCREEN
+ ------
+ currently not implemented, does nothing
+
+
+ SGN(n)
+ ------
+ returns the sign of the specified value(n)
+ 10 PRINT SGN(5)
+ 20 PRINT SGN(0)
+ 30 PRINT SGN(-7)
+  1
+  0
+  -1
+
+
+ SIN(n)
+ ------
+ returns the trigonometric sine of the specified value(n) in radians
+ 10 PRINT SIN(36)
+  -0.991778853443116
+
+
+ SLEEP n
+ -------
+ pauses the program for a specified amount of seconds(n)
+
+
+ 10 SLEEP 5
+
+
+ SOUND
+ -----
+ currently not implemented, does nothing
+
+
+ SOUNDRND
+ --------
+ currently not implemented, does nothing
+
+
+ SPACE$(n), SPC$(n), SPA(n)
+ --------------------------
+ returns the specified amount of spaces(n)
+
+ 10 PRINT "ABC" SPACE$(10) "ABC"
+  abc          abc
+
+
+ SQR(n)
+ ------
+ returns the square root of the specified value(n)
+
+ 10 PRINT SQR(36)
+  6
+
+
+ STOP
+ ----
+ halts the program and returns to the basic interpreter
+ useful for debugging programs
+
+
+ STR$(n)
+ -------
+ returns a string representation of the specified value(n)
+
+ 10 PRINT STR$(12345)
+  12345
+
+
+ STRING$(n, string)
+ ------------------
+ repeats a string n times
+
+ 10 PRINT STRING$(10, "A")
+  AAAAAAAAAA
+
+
+ TAB(n), TAB$(n)
+ ----------------
+ returns the specified amount of spaces(n)
+
+
+ 10 PRINT "ABC" TAB$(10) "ABC"
+  abc          abc
+
+
+ TAN(n)
+ ------
+ returns the trigonometric tangent of the specified value(n) in radians
+
+ 10 PRINT TAN(38)
+  0.310
+
+
+ TH_SYSLEVEL
+ -----------
+ returns the user's Telehack system level
+
+
+ 10 PRINT TH_SYSLEVEL
+  12
+
+
+ TH_HASBADGE(badge$)
+ -------------------
+ returns a UNIX timestamp of when the user earned badge$, or 0
+
+
+ 10 PRINT TH_HASBADGE("ACCT")
+  1559673339
+
+ 10 PRINT TH_HASBADGE("ACCT", "doesntexist")
+  0
+
+ 10 PRINT TH_HASBADGE("POOTER")
+  0
+
+
+ TH_HASLOGIN(host$)
+ ------------------
+ 1 if the user has login on host$, else 0
+
+
+ 10 PRINT TH_HASLOGIN("mimsy")
+  1
+
+
+ 10 PRINT TH_HASLOGIN("ames")
+  0
+
+ TH_HASROOT(host$)
+ -----------------
+ 1 if the user has root on host$, else 0
+
+
+ 10 PRINT TH_HASROOT("mimsy")
+  1
+
+
+ 10 PRINT TH_HASROOT("ames")
+  0
+
+
+ TH_HASADMIN(sat$)
+ -----------------
+ 1 if the user has admin on sat$, else 0
+
+
+ 10 PRINT TH_HASADMIN("sat_BT 5")
+  1
+
+
+ TH_DEFGROUP$
+ ------------
+ returns the user's defgroup, separated by spaces
+
+
+ 10 PRINT TH_DEFGROUP$
+  archer lorelei
+
+
+ TH_PLAN$
+ --------
+ returns the user's .plan as a string
+
+
+ 10 PRINT TH_PLAN$
+   To write a BASIC program
+    <3
+
+
+ TH_TIME
+ -------
+ Returns the current UNIX timestamp
+
+
+ TH_LOCALTIME[$]
+ ---------------
+ Returns a human-readable local time for the given unix timestamp.
+
+ 10 PRINT TH_LOCALTIME$(TH_TIME)
+  Wednesday, December 9, 2020 6:40:49 PM PST
+
+ Returns values of time and date if options are supplied, and no sigil:
+
+ 0 - sec
+ 1 - min
+ 2 - hour
+ 3 - mday
+ 4 - mon
+ 5 - year
+ 6 - wday
+ 7 - yday
+ 8 - isdst
+
+ 10 FOR I = 0 TO 8 : PRINT TH_LOCALTIME(I,0) : NEXT I
+  0
+  0
+  16
+  31
+  11
+  69
+  3
+  364
+  0
+
+
+ TH_GMTIME[$]
+ ------------
+ Returns a human-readable UTC time for the given unix timestamp
+ with the same options as TH_LOCALTIME[$]
+
+
+ TH_MODEM$
+ ---------
+ returns the modem number or hosted filename depending on the option passed
+
+ 0 - number
+ 1 - filename
+
+
+ TH_HOSTNAME$
+ ------------
+ returns current hostname or hostname of argument passed.  Supports OSPROBER plugin.
+
+
+ >PRINT TH_HOSTNAME$
+  telehack
+
+
+ TH_NETSTAT$
+ -----------
+ returns current netstat or netstat of argument passed separated by spaces
+
+
+ TH_MD5HEX$
+ ----------
+ returns md5 hex of argument passed as hex
+
+
+ >PRINT TH_MD5HEX$("FOO")
+  901890a8e9c8cf6d5a1a542b229febff
+
+
+ TH_MD5BASE64$
+ -------------
+ returns md5 hex of argument passed as base64
+
+ >PRINT TH_MD5BASE64$("FOO")
+  kBiQqOnIz21aGlQrIp/r/w
+
+
+ TH_B64E$
+ --------
+ returns argument encoded to Base64
+
+ >PRINT TH_B64E$("Telehack")
+  VGVsZWhhY2s=
+
+
+ TH_B64D$
+ --------
+ returns argument decoded from Base64
+
+ >PRINT TH_B64D$("VGVsZWhhY2s=")
+  Telehack
+
+
+ TH_EXEC
+ -------
+ executes a shell command and returns to the current basic program
+
+ >TH_EXEC "echo foo" : TH_EXEC "echo bar"
+ foo
+ bar
+
+ >TH_EXEC "fnord", OUT$ : PRINT OUT$
+ The iguana from Austin will go to Austin.
+
+ >
+
+ Note that variables assigned with TH_EXEC will have trailing CR LF
+ characters, much like `` in shell scripts.
+
+
+ TH_RE(txt$,pat$,countmode$,ignorecase$)
+ ---------------------------------------
+ number context, returns bool depending on regex match
+
+  10  IF TH_RE( "hello", "l{2}" ) THEN PRINT "it matches"
+   it matches
+
+ if countmode is true, return number of matches
+  10 PRINT TH_RE( "HELLO", "L", 1 )
+    2
+
+
+ TH_RE$(txt$,pat$,ind$,ignorecase$)
+ ----------------------------------
+ string context, returns single captured group of match
+
+  10  PRINT TH_RE$( "hello world", "he\w+" )
+   hello
+
+ if an index (n) is provided, the string returned will be the (n)th captured group
+
+  10 PRINT TH_RE$( "FOO BAR BAZ BINGO BANGO", "BA...", 2 )
+    BANGO
+
+ TH_SED$(txt$,find$,replace$,opt$)
+ ---------------------------------
+ stream editor, replaces matched substring with substitution
+ available options:
+   "i" = case insensitive
+   "g" = global mode
+
+ 10  PRINT TH_SED$( "foo bAR", "oo|ar", "izz", "gi" )
+  fizz bizz
+
+
+ TIM(n)
+ ------
+ returns values of time and date depending on n
+
+
+ 0 - current minute (0-59)
+ 1 - current hour (0-23)
+ 2 - current day (1-366)
+ 3 - current year (0-99)
+ 4 - current second (0-59)
+
+ 10 PRINT TIM(0)
+  29
+
+
+ TIME$
+ -----
+ returns the local system time
+
+ 10 PRINT TIME$
+  07:49:38
+
+
+ TIMER
+ -----
+ returns the number of seconds since midnight
+
+ 10 PRINT TIMER
+  28210
+
+
+ TYP(n)
+ ------
+ returns the type of the next record in a file
+
+ Return Value
+ 1 for numeric data (not currently working)
+ 2 for string data
+ 3 for end of file/data
+
+
+ 10  REM CREATE A FILE FOR TESTING
+ 20  FILENAME$ = "TEST" + STR$(INT(RND(1)*128*2)) + ".TXT"
+ 30  OPEN FILENAME$, AS #1
+ 40  REM POPULATE FILE WITH TEST DATA
+ 50  PRINT# 1, "some text"
+ 60  REM SAVE FILE
+ 70  CLOSE #1
+ 80  REM TEST TYP() COMMAND
+ 90  OPEN FILENAME$, AS #1
+ 100  PRINT TYP(1)
+  2
+ 110  REM ADVANCE ONE RECORD
+ 120  INPUT# 1, DUMP$
+ 130  PRINT TYP(1)
+  3
+ 140  CLOSE #1
+
+
+ TROFF
+ -----
+ stops tracing of program statements
+ useful for debugging
+
+
+ TRON
+ ----
+ starts tracing of program statements
+ useful for debugging
+
+
+ UPS$(string)
+ ------------
+ returns the uppercase value of the given string
+
+ 10 PRINT UPS$("hello")
+  HELLO
+
+
+ USER$
+ -----
+ returns the current logged in user
+
+ 10 PRINT USER$
+  archer
+
+
+ WIDTH
+ -----
+ returns your terminal width
+
+ 10 PRINT width
+  141
+
+
+ VAL(String)
+ -----------
+ returns the numerical value of the specified String
+
+ 10 PRINT VAL("12345")
+  12345
+
+
+ 7. How to...
+ ------------
+
+ Q: I need a XOR Function, but there is none.
+ A: Create the Function with:
+    DEF FNXOR(Value1, Value2) = (Value1 OR Value2) - (Value1 AND Value2)
+    Now you can call it with:
+    PRINT FNXOR(5, 361)
+     364
+
+ Q: How do i read from a file?
+ A: 10 OPEN "filename.txt", AS #1
+    20 IF EOF(1) = -1 THEN GOTO 60
+    30 INPUT# 1, A
+    40 PRINT A
+    50 GOTO 20
+    60 CLOSE #1
+
+ Q: How do i write into a file?
+ A: 10 OPEN "filename.txt", AS #1
+    20 PRINT# 1, "Hello World!"
+    30 CLOSE #1
+    Note: this will always OVERWRITE the file
+
+ Q: How do i APPEND into a file?
+ A: Basically, you have to open the file and put the filepointer at the end of file. To do so:
+    10 OPEN "filename.txt", AS #1
+    20 IF EOF(1) = -1 THEN GOTO 50
+    30 INPUT# 1, DUMPP$
+    40 GOTO 20
+    50 PRINT# 1, "We are now at the End of File and appending stuff"
+    60 CLOSE #1
+
+ Q: How do i split a string into an Array?
+ A: You need to iterate through your String (YOURSTRING) and look for a delimiter (DELIMITER).
+    For every iteration put the actual Character at that Position in the String (YOURSTRING)
+    in a temporary Variable (TSTR).
+    Once you found the delimiter (DELIMITER), save the Result of the temporary Variable (TSTR) into an Array.
+    MAXSTACK tells you how many Items are actually in the Array.
+    A Example is below:
+    10  DIM ARRAY(2)
+    20  DELIMITER = " "
+    30  YOURSTRING = "Hello World"
+    40  MAXSTACK = 0
+    45  REM PUT YOUR PROGRAM LOGIC HERE
+    50  GOSUB 100
+    55  REM PUT YOUR PROGRAM LOGIC HERE
+    60  END
+   100  REM split
+   110  TSTR = ""
+   120  FOR I = 1 TO LEN(YOURSTRING)
+   130  IF MID$(YOURSTRING, I, 1) = DELIMITER THEN GOTO 200
+   140  TSTR = TSTR + MID$(YOURSTRING, I, 1)
+   150  IF I = LEN(YOURSTRING) THEN GOTO 200
+   160  NEXT I
+   170  RETURN
+   200  REM We have found a delimiter and are pushing it into the Array
+   210  MAXSTACK = MAXSTACK + 1
+   220  ARRAY(MAXSTACK) = TSTR
+   230  TSTR = ""
+   240  GOTO 160
+
+ Q: How do i generate a Random Number?
+ A: 10 RANDOMIZE TIMER
+    20 MAXNR = 10
+    20 RNR = INT(RND(1)*MAXNR)
+    30 PRINT RNR
+
+ Q: I would like to Code in BASIC, but all those Line Numbers are messy!
+ A: I've made a Script which allows you, to code without Line Numbers and use Labels for GOTO/GOSUB
+    You can find it here: https://p85.github.io/renumber/renumber.html
+
+
+ 8. COMM.EXE Basic Programs
+ --------------------------
+
+ General Info
+ ------------
+ Your Program has to run in an infinite Loop. Your Program needs also some SLEEPs otherwise it will burn
+ too much CPU and gets killed. You have to watch for User Input and disconnect the Caller if that happens.
+ Otherwise the Caller would block your Modem forever.
+ Make Sure COMM.EXE is in your Process-Table (ps)
+ Open a new Session and run the Basic Program.
+
+ Heres an Basic Template:
+ ------------------------
+ 10 SLEEP 0.1
+ 20 TMO = 600
+ 25 CT = 0
+ 100 OPEN "COM1:9600", AS #1
+ 110 SLEEP 0.1
+
+ Q: How do i accept an incoming Call?
+ A: You have to read the Buffer and watch for a "RING" (Note: you have to strip a \n at the end of Buffer)
+    Then you should send "ATA". You are connected now.
+
+    (I Assume you have the Basic Template)
+    115 REM If Buffer empty, go back to 110
+    120 IF EOF(1) < 0 THEN GOTO 110
+    125 REM Store Buffer in BUF Variable
+    130 INPUT# 1, BUF
+    135 REM If theres a "RING" in BUF we got a call. GoTo Line 160
+    140 IF LEFT$(BUF, 4) = "RING" THEN GOTO 160
+    145 REM Otherwise go back to 110
+    150 GOTO 110
+    155 REM Send ATA and initiate a connection
+    160 PRINT# 1, "ATA"
+    170 REM You are now connected, put Program Logic here
+
+ Q: How do i read input and disconnect if the User is idle for more than n seconds?
+ A: We have set in the TMO Variable a Timeout in seconds. The CT Variable will hold our Current Timer Value.
+
+    (I Assume you have the Basic Template & the Incoming Call part)
+    195 REM Show an Prompt
+    200 PRINT# 1, "Enter something:";
+    205 REM If theres crap in the Buffer, empty it
+    210 IF EOF(1) = 0 THEN INPUT# 1, DUMP$ : GOTO 210
+    215 REM If theres actual Input, store it in INP Variable
+    220 IF EOF(1) = 0 THEN INPUT# 1, INP$ : SLEEP 0.1 : GOTO 310
+    225 REM Strip the \n
+    230 INP$ = LEFT$(INP$, LEN(INP$)-1)
+    235 REM Check if CT > TMO. If True the timeout has been passed. Disconnect the user
+    240 IF CT > TMO THEN PRINT# 1, "INPUT TIMEOUT, BYE" : PRINT# 1, "MODEM HANGUP" : SLEEP 1 : PRINT# 1, "+++" : PRINT# 1, "ATH0" : GOTO 20
+    245 REM Increment the Current Timer (CT) by 0.1
+    250 CT = CT + 0.1
+    255 REM Sleep a little bit...
+    260 SLEEP 0.1
+    270 GOTO 220
+    295 REM Strip the \n
+    300 INP$ = LEFT$(INP$, LEN(INP$)-1)
+    305 REM Reset the Current Timer (CT)
+    310 CT = 0
+    315 REM The entered User Value is now in INP
+
+
+ 9. ANSI Escape Sequences
+ ------------------------
+
+ An ANSI escape sequence is a sequence of ASCII characters, the first two of which are the ASCII "Escape" character 27 [chr$(27)]
+ and the left-bracket character "[" [chr$(91)]. The character or characters following the escape and left-bracket characters specify
+ an alphanumeric code that controls a keyboard or display function.
+
+ For example, these can be used instead of, or in addition to LOCATE (for locating the cursor in the window); COLOR (for setting
+ text and background colors.) and getting the user's arrow-key input.
+ Using escape sequences can give you greater control over how your program displays its output.
+ Be aware that not all terminal types support some of these sequences, and your terminal must support 256-bit colors in order to
+ display those properly.
+
+
+ Character attributes:
+ ---------------------
+
+ Esc[0m             Turn off character attributes
+ Esc[1m             Turn bold mode on
+ Esc[2m             Turn low intensity mode on
+ Esc[4m             Turn underline mode on
+ Esc[5m             Turn blinking mode on
+ Esc[7m             Turn reverse video on
+ Esc[8m             Turn invisible text mode on
+
+
+ Move the cursor or scroll the window:
+ -------------------------------------
+
+ Esc[ValueA         Move cursor up n lines
+ Esc[ValueB         Move cursor down n lines
+ Esc[ValueC         Move cursor right n lines
+ Esc[ValueD         Move cursor left n lines
+ Esc[H              Move cursor to upper left corner
+ Esc[;H             Move cursor to upper left corner
+ Esc[Line;ColumnH   Move cursor to screen location v,h
+ Esc[f              Move cursor to upper left corner
+ Esc[;f             Move cursor to upper left corner
+ Esc[Line;Columnf   Move cursor to screen location v,h
+ EscD               Move/scroll window up one line
+ EscM               Move/scroll window down one line
+ EscE               Move to next line
+
+
+ Show or hide the cursor:
+ ------------------------
+
+ Esc[?25h           Show cursor
+ Esc[?25l           Hide cursor
+
+
+ Colors:
+ -------
+
+ Esc[38;5;⟨n⟩m Select foreground color
+ Esc[48;5;⟨n⟩m Select background color
+
+      0 - 7:  standard colors (as in ESC [ 30–37 m)
+     8 - 15:  high intensity colors (as in ESC [ 90–97 m)
+   16 - 231:  6 × 6 × 6 cube (216 colors): 16 + 36 × r + 6 × g + b (0 ≤ r, g, b ≤ 5)
+  232 - 255:  grayscale from black to white in 24 steps
+
+
+ Color Examples:
+ ---------------
+
+
+ 10 PRINT CHR$(27) + "[38;5;2mThe foreground is green"
+ 20 PRINT CHR$(27) + "[48;5;9mThe background is red"
+ 30 PRINT CHR$(27) + "[HThis will appear on line 1, starting in position 1."
+
+ Get arrow key input:
+ --------------------
+
+ 10 KEY$ = INKEY$
+ 20 IF KEY$ = CHR$(27) THEN KEY$ = INKEY$ : IF KEY$ = "[" THEN GOTO 40
+ 30 GOTO 10
+ 40 KEY$ = INKEY$
+ 50 IF KEY$ = "A" THEN PRINT "UP"
+ 60 IF KEY$ = "B" THEN PRINT "DOWN"
+ 70 IF KEY$ = "C" THEN PRINT "RIGHT"
+ 80 IF KEY$ = "D" THEN PRINT "LEFT"
+ 90 GOTO 10
