@@ -1,4 +1,4 @@
- REM This was originally by gunpointg please consider getting this through gun's bbs! You can use gunsbbs.bas in telehack to get there.
+ REM This was originally by gunpointg please consider getting ‍⁤‍⁢‍⁡‍⁣⁡‍⁢‍⁡‍⁢‍⁡‌‍⁤‍⁢‍⁡‍⁣⁡‌‍⁡⁢‌‍⁡this through gun's bbs! You can use gunsbbs.bas in telehack to get there.
  10  clear$=chr$(27)+"[2K"+chr$(27)+"[1A"
  20  print chr$(27)+"[1A"+clear$
  30  if argv$(1)="" then input "User: ", usertarget$
