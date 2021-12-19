@@ -1,4 +1,4 @@
- REM This was originally by gunpointg please consider getting this through gun's bbs!
+ REM This was originally by gunpointg please consider getting this through gun's bbs! You can use gunsbbs.bas in telehack to get there.
  10  if argv$(1)="/skip" or argv$(1)="skip" then goto 40
  20  if th_hostname$="telehack (TEL/OS)" then print "%program incompatible with this host cpu" : end
  30  if instr(dir$,"pdebug.exe")=-1 then print "%pdebug.exe missing" : end
