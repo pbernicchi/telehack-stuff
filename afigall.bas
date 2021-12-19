@@ -1,1 +1,1 @@
-10 th_exec "finger /auto /cpu /port /protocol /time /weather"
+10 th_exec "finger /auto=0.1 /cpu /port /protocol /time /weather"
