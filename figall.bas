@@ -1,0 +1,1 @@
+10 th_exec "finger /cpu /port /protocol /time /weather"
