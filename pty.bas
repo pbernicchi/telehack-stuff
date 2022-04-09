@@ -6,5 +6,6 @@
 30 PRINT "attached 27"
 40 th_exec "attach 27"
 50 th_exec "quit"
-60 th_exec "r"
-70 PRINT "good bye!"
+60 PRINT "disconnected from 27"
+70 th_exec "r"
+80 PRINT "good bye!"
