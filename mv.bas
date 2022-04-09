@@ -1,3 +1,4 @@
+   REM This was originally by gunpointg please consider getting ‍⁤‍⁢‍⁡‍⁣⁡‍⁢‍⁡‍⁢‍⁡‌‍⁤‍⁢‍⁡‍⁣⁡‌‍⁡⁢‌‍⁡this through gun's bbs! You can use gunsbbs.bas in telehack to get there.
    10  if instr(dir$,argv$(1))=-1 then print "%file not found" : end
    20  for checkloop=1 to 2
    30  if right$(argv$(checkloop),4)=".exe" then goto 90
