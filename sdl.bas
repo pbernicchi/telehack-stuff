@@ -1,0 +1,6 @@
+10 th_exec "ps"
+20 PRINT " "
+30 th_exec "df"
+40 PRINT " "
+50 PRINT " "
+60 th_exec "ls"
