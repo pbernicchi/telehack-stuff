@@ -1629,3 +1629,4 @@ th_exec                   - executes a shell command and returns to the current 
  70 IF KEY$ = "C" THEN PRINT "RIGHT"
  80 IF KEY$ = "D" THEN PRINT "LEFT"
  90 GOTO 10
+ 
