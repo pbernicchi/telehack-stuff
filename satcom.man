@@ -1,0 +1,230 @@
+  :::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  ::                                                     ::
+  ::  This document is property of:                      ::
+  ::                                                     ::
+  ::  |\\    ||       /\        ________        /\       ::
+  ::  ||\\   ||      //\\      / _______>      //\\      ::
+  ::  || \\  ||     //  \\    | <_______      //  \\     ::
+  ::  ||  \\ ||    //____\\    \_______ \    //____\\    ::
+  ::  ||   \\||   //______\\    _______> |  //______\\   ::
+  ::  ||    \\|  //        \\  <________/  //        \\  ::
+  ::                                                     ::
+  ::  The National Aeronautics & Space Administration    ::
+  ::                                                     ::
+  :::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+  Author: QuantX
+
+  === [ Figure 1: Flow of establishing a link ] ===
+
+  1. Find the coordinates of a suitable Communications Satellite
+  2. Confirm the coordinates of both desired Ground Stations
+  3. Connect to the Origin Ground Station
+  4. Calculate the Azimuth and Elevation to the Satellite
+  5. Adjust the Ground Station to acquire the Satellite
+  6. Connect to the Satellite
+  7. Calculate the Azimuth and Elevation to the Target Ground Station
+  8. Adjust the Satellite to acquire the Target Ground Station
+  9. A link should automatically establish and can be used normaly
+
+  === [ Subject 1: Finding a Ground Station ] ===
+
+  Satellite communication relays allow users to create their own links between
+  hosts. These links are one way and can be made between any two Hosts equiped
+  with Ground Stations. The following Hosts are equiped with ground stations:
+  hosts with 'NASA' or 'university' in their descriptions, and military hosts
+  with the '.af' suffix in their name. A special program will be needed to
+  connnect to and operate the dish itself.
+
+  === [ Figure 2: Ground to Orbit Communication ] ===
+
+                   [Satellite]
+                      +---+
+                ------[   ]------
+                      +-+-+
+                       _|_
+                      /   \
+                     __
+                      /|
+
+                    / 
+
+                  /
+
+                /
+
+       \      /
+        \   \ 
+         \  /
+         |\/
+         | \
+         |  \
+         |
+        _|_
+   [Transciever]
+
+  === [ Subject 2: Acquiring a satellite ] ===
+
+  Any satellite dishes' physical location can be described with a 3 component
+  coordinate ( x, y, z ). Ground Station dishes point at the sky, Satellite
+  dishes point at the ground. To acquire a Satellite utilizing a Ground
+  Station, the correct azmiuth and elevation must be known. The elevation and
+  azimuth can be calculated with the coordinates of both dishes. The azimuth
+  and elevation are expresed in degrees utilizing a floating point variable.
+  Both the azimuth and the elevation must be accurate to within 0.5 degrees.
+
+  === [ Subject 3: Calculating Azimuth ] ===
+
+  The Azimuth (in degrees) can be found by utilizing the following formula:
+
+  Let the coordiantes of the Origin Dish be: ( Ax, Ay, Az )
+  Let the coordinates of the Target Dish be: ( Bx, By, Bz )
+
+  NOTE: This will be in radians
+  Let K equal: atan2( Bx - Ax, By - Ay )
+
+  If K contains a value less than zero, increase the value by: 2 * [PI]
+
+  Let the Azimuth equal K * 180 / [PI]
+
+  === [ Subject 4: Calculating Elevation ] ===
+
+  The Elevation (in degrees) can be found by utilizing the following formula:
+
+  Let the coordiantes of the Origin Dish be: ( Ax, Ay, Az )
+  Let the coordinates of the Target Dish be: ( Bx, By, Bz )
+
+  Let K equal: sqrt( ( Bx - Ax ) ^ 2 + ( By - Ay ) ^ 2 )
+
+  Let the Elevation equal: atan( ( Bz - Az ) / K ) * 180 / [PI]
+
+  NOTE: The Elevation for a Ground Station must always be positive
+  NOTE: The Elevation for a Satellite is typically negative
+
+  === [ Figure 3: Ground to Ground Relay ] ===
+
+                   [Satellite]
+                      +---+
+                ------[   ]------
+                      +-+-+
+                       _|_
+                      /   \
+                     __
+                      /|  \
+
+                    /       \
+
+                  /           \
+
+                /               \
+
+       \      /                  _\|    /
+        \   \                          / 
+         \  /                         /
+         |\/                         /|
+         | \                        / |
+         |  \                      /  |
+         |                            |
+        _|_                          _|_
+   [Transciever]                [Transciever]
+
+  === [ Subject 5: Communicating with a Satellite ] ===
+
+  The computer systems embeded in Communication Satellites are rudimentary at
+  best. As such, Satellites accept command strings in the form of two byte
+  hexadecimal followed by an optional four byte parameter, usually in the form
+  of a hex-encoded floating point variable. A Satellite's response typically
+  takes the form of a short hex-encoded ASCII string or a hex-encoded floating
+  point variable.
+
+  === [ Figure 4: Example Established Link ] ===
+
+  NOTE: The & symbol denotates that this link is a Satellite connection
+
+  mimsy$ netstat
+    host           organization                          location
+    ----           ------------                          --------
+  & ames           NASA Ames Research Center             Moffett Field, CA
+    anagld         Analytics, Inc.                       Columbia, MD
+    aplcen         Johns Hopkins University, APL Center  Laurel, MD
+    arinc          Aeronautical Radio, Inc.              Annapolis, MD
+    black-silicon  Black Silicon, Fortress Of Computati  McLean Virginia
+
+  === [ Documentation 1: Example Satellite Command String ] ===
+
+  Bad command strings:
+
+    COMMAND> 31 b8 97 a0 87
+
+    Too many bytes:
+    COMMAND> 31b897a0878306cc1949 
+
+  Good command strings:
+
+    Execute command #49:
+    COMMAND> 31
+
+    Execute command #49 (with optional parameter)
+    COMMAND> 31b897a087
+
+    Execute command #49 (with optional parameter) spaces between values
+    COMMAND> 31 b8 97 a0 87
+
+  === [ Documentation 2: Typical Satellite Commands ] ===
+
+  The following commands are generic to all Communications Satellites.
+
+  NOTE: The * denotates that this command must be followed by a four byte
+  parameter, usually a floating point variable.
+  NOTE: The contents of "" are hex-encoded ASCII literal strings.
+  NOTE: Entering an invalid command returns the error: "BAD_CMD"
+  NOTE: Failing to supply a parameter returns the error: "NO_PARAM"
+  NOTE: Unnecessary parameters are ignored
+
+  00 :
+    Request: The name of the Satellite
+    Response: Hex-encoded ASCII string
+
+  01 :
+    Request: The X Coordinate of the Satellite
+    Response: Hex-encoded floating point variable
+
+  02 :
+    Request: The Y Coordinate of the Satellite
+    Response: Hex-encoded floating point variable
+
+  03 :
+    Request: The Z Coordinate of the Satellite
+    Response: Hex-encoded floating point variable
+
+  04 :
+    Request: The Azimuth of the Satellite's dish
+    Response: Hex-encoded floating point variable
+
+  05 :
+    Request: The Elevation of the Satellite's dish
+    Response: Hex-encoded floating point variable
+
+  06 :
+    Request: The name of the Host the Satellite's dish is pointed at
+    Error, the Satellite failed to detect a host: "NO_RESPONSE"
+    Response: Hex-encoded ASCII string
+
+  07 :
+    Request: Close the connection to the Satellite
+    Response: "DISCONNECT"
+
+  08* :
+    Request: Change the Azimuth of the Satellite's dish
+    Error, parameter is less than 0 degrees or greater than 360 : "BAD_ANGLE"
+    Error, parameter was not a floating point variable: "NOT_FLOAT"
+    Response: "SUCCESS"
+
+  09* :
+    Request: Change the Elevation of the Satellite's dish
+    Error, parameter is less than -90 degrees or greater than 90 : "BAD_ANGLE"
+    Error, parameter was not a floating point variable: "NOT_FLOAT"
+    Response: "SUCCESS"
+
+  99* :
+    Reserved for Satellite broadcast and administration.
